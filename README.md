@@ -96,10 +96,14 @@ npm install
 Create a `.env` file in the root:
 
 ```env
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/xeno-crm
-GOOGLE_CLIENT_ID=<your-google-client-id>
-GOOGLE_CLIENT_SECRET=<your-google-client-secret>
-OPENAI_API_KEY=<your-openai-api-key>
+MONGODB_URI=your_mongodb_connection_string
+VITE_GROQ_API_KEY=your_groq_api_key
+VITE_VAPI_WEB_TOKEN=your_vapi_web_token
+VITE_VAPI_WORKFLOW_ID=your_vapi_workflow_id
+VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id
+VITE_GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ### 4. 🌱 Seed the Database (Optional)
