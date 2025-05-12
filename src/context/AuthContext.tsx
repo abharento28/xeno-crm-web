@@ -62,6 +62,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      // Check if we're coming back from an OAuth redirect with hash params
+      if (window.location.hash && window.location.hash.includes('access_token')) {
+        console.log('Detected hash params in URL, handling redirect...');
+        
+        // If we're on localhost during development, this is expected
+        // But if we're on Vercel with localhost in the URL, we need to fix the URL
+        if (window.location.origin.includes('vercel.app') && 
+            window.location.hash.includes('localhost')) {
+          // Replace localhost with actual Vercel domain in the hash
+          const fixedHash = window.location.hash.replace(
+            /localhost:3000/g, 
+            window.location.host
+          );
+          // Update URL without reloading
+          window.history.replaceState(
+            null, 
+            document.title, 
+            window.location.pathname + fixedHash
+          );
+          console.log('Fixed redirect URL hash params');
+        }
+      }
+
       const initAuth = async () => {
         console.log('AuthProvider: Getting session');
         // First try to get the current session
@@ -92,8 +115,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // If we just got a URL-based login redirect, refresh the page to avoid 404s
           // This helps with Vercel deployments where the hash-based redirect can cause issues
           if (event === 'SIGNED_IN' && window.location.hash.includes('access_token')) {
-            console.log('AuthProvider: Detected URL-based login, refreshing page');
-            window.location.href = '/'; // Redirect to root path
+            console.log('AuthProvider: Detected URL-based login, redirecting to root path');
+            
+            // Clear the hash and redirect to the root path
+            window.location.href = window.location.origin + '/';
           }
         });
 
@@ -117,10 +142,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      // Get the current deployment URL (Vercel or localhost)
+      const deploymentUrl = window.location.origin;
+      console.log('Current deployment URL:', deploymentUrl);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({ 
         provider: 'google',
         options: {
-          redirectTo: window.location.origin
+          redirectTo: deploymentUrl,
+          // Skip the URL fragment which may cause routing issues
+          skipBrowserRedirect: false
         }
       });
       
