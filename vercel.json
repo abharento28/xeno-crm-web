@@ -16,21 +16,32 @@
   "routes": [
     {
       "src": "/api/customers",
-      "methods": ["GET", "POST", "OPTIONS"],
+      "methods": ["GET", "POST", "DELETE", "OPTIONS"],
       "dest": "api/customers.js"
     },
     {
       "src": "/api/campaigns",
-      "methods": ["GET", "POST", "OPTIONS"],
+      "methods": ["GET", "POST", "DELETE", "OPTIONS"],
       "dest": "api/campaigns.js"
+    },
+    {
+      "src": "^/assets/(.*)",
+      "dest": "/assets/$1"
     },
     {
       "src": "/(.*\\.(js|css|ico|png|jpg|svg|json))",
       "dest": "/$1"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/index.html",
+      "status": 200
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 } 
