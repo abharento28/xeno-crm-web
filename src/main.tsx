@@ -1,13 +1,29 @@
+// Import the redirect fixer first, so it runs before anything else
+import './utils/fixRedirects';
+
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { handleOAuthRedirect } from './utils/authRedirect.ts';
+import { fixLocalhostRedirects } from './utils/fixRedirects';
 
 console.log('Application initializing...');
 console.log('Current URL:', window.location.href);
 
-// First, try to handle any OAuth redirects before rendering the app
+// First, check for any broken localhost redirects
+if (window.location.href.includes('localhost:3000') && window.location.hostname !== 'localhost') {
+  console.log('Direct localhost fix running...');
+  const fixed = fixLocalhostRedirects();
+  
+  if (fixed) {
+    console.log('Localhost URL fixed, waiting for navigation...');
+    // Exit early since we're redirecting
+    throw new Error('Redirecting to fix localhost URL');
+  }
+}
+
+// Then, try to handle any OAuth redirects before rendering the app
 // This fixes the localhost redirect issue on Vercel
 try {
   console.log('Checking for OAuth redirects...');

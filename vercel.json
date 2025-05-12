@@ -15,6 +15,11 @@
   ],
   "routes": [
     {
+      "src": "/auth-redirect.html",
+      "dest": "/auth-redirect.html",
+      "status": 200
+    },
+    {
       "src": "/api/customers",
       "methods": ["GET", "POST", "DELETE", "OPTIONS"],
       "dest": "api/customers.js"
@@ -43,5 +48,17 @@
   ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "redirects": [
+    { 
+      "source": "http://localhost:3000/(.*)#access_token=(.*)", 
+      "destination": "/$1#access_token=$2",
+      "permanent": false
+    },
+    { 
+      "source": "http://localhost:3000/(.*)", 
+      "destination": "/$1",
+      "permanent": false
+    }
   ]
 } 

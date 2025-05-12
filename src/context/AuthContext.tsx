@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { User as SupabaseUser } from '@supabase/auth-js';
-import { getSiteUrl, isProduction } from '../utils/authRedirect';
+import { getSupabaseEnvVars, getOAuthRedirectUrl } from '../utils/supabaseConfig';
 
 interface User extends SupabaseUser {
   name?: string;
@@ -27,18 +27,19 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {}
 });
 
-// Safely get environment variables with fallbacks
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
+// Get Supabase environment variables
+const { supabaseUrl: SUPABASE_URL, supabaseAnonKey: SUPABASE_ANON_KEY } = getSupabaseEnvVars();
 
 // Check for missing config
 const isMissingConfig = !SUPABASE_URL || !SUPABASE_ANON_KEY;
 
 // Get the correct site URL for OAuth redirects
-const SITE_URL = getSiteUrl();
+const SITE_URL = window.location.origin;
 
-console.log('Auth environment:', isProduction() ? 'PRODUCTION' : 'DEVELOPMENT');
+console.log('Auth environment: PRODUCTION or DEVELOPMENT based on hostname');
 console.log('Site URL for auth:', SITE_URL);
+console.log('Window origin:', window.location.origin);
+console.log('Supabase URL:', SUPABASE_URL ? 'Set' : 'Missing');
 
 // Only create the client if config exists
 const supabase = isMissingConfig 
@@ -48,11 +49,12 @@ const supabase = isMissingConfig
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true,
-        flowType: 'pkce'
+        flowType: 'pkce',
+        // We handle our own redirects - no site URL here to prevent localhost issues
       },
       global: {
         headers: {
-          'X-Site-URL': SITE_URL
+          'X-Site-URL': window.location.origin // Force current URL
         }
       }
     });
@@ -86,6 +88,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check for access_token in hash (manual handling in case autodetection fails)
       if (window.location.hash && window.location.hash.includes('access_token=')) {
         console.log('AuthProvider: Detected access_token in URL hash');
+        
+        // Fix localhost redirect if needed
+        if (window.location.href.includes('localhost:3000') && window.location.hostname !== 'localhost') {
+          console.log('Fixing localhost redirect in access_token URL');
+          const fixedHash = window.location.hash;
+          // Store hash for processing after redirect
+          sessionStorage.setItem('supabase_auth_hash', fixedHash.substring(1));
+          // Redirect to current origin with same hash
+          const redirectUrl = `${window.location.origin}${fixedHash}`;
+          window.location.href = redirectUrl;
+          return;
+        }
       }
 
       const initAuth = async () => {
@@ -147,16 +161,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      console.log(`Starting OAuth login with redirect to: ${SITE_URL}`);
+      // Use our special redirect page that handles the localhost issue
+      // This ensures the redirect is captured and fixed before any React code runs
+      const redirectUrl = `${window.location.origin}/auth-redirect.html`;
+      
+      console.log(`Starting OAuth login with redirect to: ${redirectUrl}`);
+      console.log('Current location:', window.location.href);
+      
+      // Clear any previous auth state in session storage
+      sessionStorage.removeItem('supabase_auth_hash');
+      sessionStorage.removeItem('supabase_auth_callbackUrl');
+      sessionStorage.removeItem('processing_redirect');
+      
+      // Store the current URL to detect if we're redirected to localhost
+      sessionStorage.setItem('auth_origin', window.location.origin);
       
       const { data, error } = await supabase.auth.signInWithOAuth({ 
         provider: 'google',
         options: {
-          redirectTo: SITE_URL,
+          redirectTo: redirectUrl,
+          skipBrowserRedirect: false,
           queryParams: {
             // Add a unique identifier to avoid caching issues
             prompt: 'select_account',
-            ts: Date.now().toString()
+            access_type: 'offline',
+            // Force use of our redirect URL
+            redirect_uri: redirectUrl,
+            site_url: window.location.origin
           }
         }
       });
@@ -166,6 +197,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setError(error.message);
       } else {
         console.log('Login initiated, redirecting to provider...');
+        console.log('Auth URL:', data?.url || 'No URL provided');
+        
+        // If we get a URL, intercept it to make sure it's using the right redirect
+        if (data?.url) {
+          console.log('Checking auth URL for localhost...');
+          
+          // Check if the URL contains localhost
+          if (data.url.includes('localhost:3000') && window.location.hostname !== 'localhost') {
+            console.log('Fixing localhost in auth URL');
+            // Replace localhost with the current hostname
+            const fixedUrl = data.url.replace(
+              /localhost:3000/g,
+              window.location.host
+            );
+            console.log('Fixed auth URL:', fixedUrl);
+            // Use the fixed URL
+            window.location.href = fixedUrl;
+            return;
+          }
+          
+          // Otherwise, just use the provided URL
+          window.location.href = data.url;
+        }
       }
     } catch (err) {
       console.error('Login exception:', err);

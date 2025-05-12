@@ -3,22 +3,16 @@
  * This solves the issue of localhost redirects on Vercel deployments
  */
 
+import { isProduction as checkIsProduction, getSiteUrl as getConfigSiteUrl } from './supabaseConfig';
+
 // Check if running on Vercel or similar production environment
 export const isProduction = (): boolean => {
-  const hostname = window.location.hostname;
-  const isProd = hostname !== 'localhost' && 
-         hostname !== '127.0.0.1';
-  console.log(`Environment check: hostname=${hostname}, isProduction=${isProd}`);
-  return isProd;
+  return checkIsProduction();
 };
 
-// Get the correct site URL for redirects
+// Get the correct site URL for redirects (re-exported from supabaseConfig)
 export const getSiteUrl = (): string => {
-  if (isProduction()) {
-    return window.location.origin; // Use actual deployment URL
-  } else {
-    return 'http://localhost:3000'; // Use localhost in development
-  }
+  return getConfigSiteUrl();
 };
 
 // Handle OAuth redirect after login

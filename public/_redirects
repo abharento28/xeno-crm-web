@@ -1,0 +1,5 @@
+# Redirect all localhost OAuth callbacks to the actual production URL
+http://localhost:3000/* /:splat 301!
+
+# Ensure all routes are handled by the SPA
+/* /index.html 200 

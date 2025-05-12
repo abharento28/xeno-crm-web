@@ -1,14 +1,10 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL!,
-  import.meta.env.VITE_SUPABASE_ANON_KEY!
-);
+import { useAuth } from '../context/AuthContext';
 
 const SignupPage: React.FC = () => {
+  const { login } = useAuth();
+  
   const handleGoogleSignup = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-    if (error) console.error('Google signup error:', error.message);
+    login();
   };
 
   return (
