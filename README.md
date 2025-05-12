@@ -20,7 +20,7 @@
 🎯 **Campaign Builder** — Filter-based targeted campaign creation  
 📬 **Message Delivery Simulation** — Simulate delivery attempts with logging  
 🕰️ **Campaign History** — Performance metrics & campaign logs  
-🧠 **AI Integration** — Campaign messages and summaries powered by OpenAI  
+🧠 **AI Integration** — Campaign messages and summaries powered by Groq AI  
 📱 **Responsive UI** — Built with TailwindCSS for seamless experience across devices  
 
 ---
@@ -122,7 +122,7 @@ npm run dev
 
 | Tool         | Purpose                                      |
 |--------------|----------------------------------------------|
-| 🔮 OpenAI API | Generate campaign messages & rule summaries |
+| 🔮 GroqAI API | Generate campaign messages & rule summaries |
 | 🤖 VAPI SDK   | Embedded conversational AI agent            |
 | 🎨 TailwindCSS | Modern, responsive UI styling              |
 | ⚛️ React       | Frontend user interface framework          |
@@ -135,7 +135,7 @@ npm run dev
 
 - 🔒 **Mock Authentication** – OAuth is simulated for demo purposes  
 - 📩 **Delivery Simulation** – 90% success simulation, no real vendor integration  
-- 🧠 **AI Reliance** – Dependent on OpenAI/VAPI uptime and cost  
+- 🧠 **AI Reliance** – Dependent on GroqAI/VAPI uptime and cost  
 - 🚫 **Limited Error Handling** – Basic error handling implemented  
 - 📡 **No Real-Time Updates** – Campaign and customer changes aren't live-updated  
 
