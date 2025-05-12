@@ -27,43 +27,47 @@
 
 ```bash
 xeno-crm-website/
-├── api/                     # Backend APIs
-│   ├── campaigns.js         # Campaign endpoints
-│   └── customers.js         # Customer endpoints
-├── public/
-│   └── logo.svg             # App logo
+├── api/                     # Backend API routes
+│   ├── campaigns.js         # API for managing campaigns
+│   ├── customers.js         # API for managing customers
+├── public/                  # Static assets
+│   └── logo.svg             # Logo for the app
 ├── src/
-│   ├── App.tsx              # Main app
-│   ├── index.css            # Tailwind styles
-│   ├── main.tsx             # Entry point
-│   ├── server.js            # Express server
-│   ├── vapi.sdk.ts          # VAPI AI SDK
-│   ├── components/
-│   │   └── Layout.tsx       # App layout
-│   ├── context/
-│   │   └── AuthContext.tsx  # Auth state
-│   ├── lib/
-│   │   └── db.js            # MongoDB logic
-│   ├── pages/               # App pages
-│   │   ├── AddCustomer.tsx
-│   │   ├── Agent.tsx
-│   │   ├── CampaignBuilder.tsx
-│   │   ├── CampaignHistory.tsx
-│   │   ├── CustomerList.tsx
-│   │   ├── Dashboard.tsx
-│   │   └── LoginPage.tsx
-│   ├── types/
-│   │   └── index.ts         # Shared TS types
-├── .env.production
-├── vite.config.ts
-├── package.json
-├── tailwind.config.js
-├── seed-data.js
-├── index.html
-├── tsconfig.*.json          # TypeScript configs
-├── postcss.config.js
-├── api-dev-server.js
-├── vercel.json
+│   ├── App.tsx              # Main React app entry point
+│   ├── index.css            # TailwindCSS styles
+│   ├── main.tsx             # React DOM rendering
+│   ├── server.js            # Express server for APIs
+│   ├── vapi.sdk.ts          # VAPI SDK integration
+│   ├── vite-env.d.ts        # Vite environment types
+│   ├── components/          # Reusable React components
+│   │   └── Layout.tsx       # Layout component for the app
+│   ├── context/             # React context for global state
+│   │   └── AuthContext.tsx  # Authentication context
+│   ├── lib/                 # Utility functions and database logic
+│   │   └── db.js            # MongoDB connection and models
+│   ├── pages/               # Frontend pages
+│   │   ├── AddCustomer.tsx  # Add customer page
+│   │   ├── Agent.tsx        # AI assistant page
+│   │   ├── CampaignBuilder.tsx # Campaign creation page
+│   │   ├── CampaignHistory.tsx # Campaign history page
+│   │   ├── CustomerList.tsx # Customer management page
+│   │   ├── Dashboard.tsx    # Dashboard page
+│   │   └── LoginPage.tsx    # Login page
+│   ├── types/               # TypeScript types
+│   │   └── index.ts         # Shared types for the app
+├── .env.production          # Environment variables for production
+├── api-dev-server.js        # Development server for APIs
+├── eslint.config.js         # ESLint configuration
+├── index.html               # HTML entry point
+├── package.json             # Project dependencies and scripts
+├── postcss.config.js        # PostCSS configuration
+├── seed-data.js             # Script to seed the database with sample data
+├── tailwind.config.js       # TailwindCSS configuration
+├── tsconfig.app.json        # TypeScript configuration for the app
+├── tsconfig.json            # TypeScript base configuration
+├── tsconfig.node.json       # TypeScript configuration for Node.js
+├── vercel.json              # Vercel deployment configuration
+├── vite.config.ts           # Vite configuration
 ```
 
 ---
