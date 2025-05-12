@@ -83,6 +83,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         window.history.replaceState({}, document.title, window.location.pathname);
       }
 
+      // Check for access_token in hash (manual handling in case autodetection fails)
+      if (window.location.hash && window.location.hash.includes('access_token=')) {
+        console.log('AuthProvider: Detected access_token in URL hash');
+      }
+
       const initAuth = async () => {
         console.log('AuthProvider: Getting session');
         // First try to get the current session
@@ -97,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Update user based on current session
         if (sessionData?.session) {
-          console.log('AuthProvider: Found existing session');
+          console.log('AuthProvider: Found existing session', sessionData.session);
           setUser(sessionData.session.user);
           setLoading(false);
         } else {
@@ -109,11 +114,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.log('AuthProvider: Auth state changed', event);
           
           if (event === 'SIGNED_IN') {
-            console.log('User signed in successfully');
+            console.log('User signed in successfully', session?.user);
             setUser(session?.user || null);
           } else if (event === 'SIGNED_OUT') {
             console.log('User signed out');
             setUser(null);
+          } else if (event === 'TOKEN_REFRESHED') {
+            console.log('Token refreshed', session?.user);
+            setUser(session?.user || null);
           }
           
           setLoading(false);
