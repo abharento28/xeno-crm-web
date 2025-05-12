@@ -2,9 +2,15 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Layers3 } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL!,
+  import.meta.env.VITE_SUPABASE_ANON_KEY!
+);
 
 const LoginPage: React.FC = () => {
-  const { login, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,8 +19,10 @@ const LoginPage: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleGoogleLogin = () => {
-    login();
+  const handleGoogleLogin = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+    if (error) console.error('Google login error:', error.message);
+    else console.log('Login successful:', data);
   };
 
   return (
@@ -67,7 +75,7 @@ const LoginPage: React.FC = () => {
               </div>
               <div className="mt-6">
                 <p className="text-xs text-gray-500 mb-1">This is a demo application for the Xeno internship project.</p>
-                <p className="text-xs text-gray-500">Clicking "Sign in with Google" will use a mock authentication for demonstration purposes.</p>
+                <p className="text-xs text-gray-500">Clicking "Sign in with Google" will use google authentication to sign up or login.</p>
               </div>
             </div>
           </div>
