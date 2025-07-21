@@ -7,7 +7,6 @@
 
 ![Xeno CRM Architecture](https://i.ibb.co/tySxWMH/Screenshot-2025-05-12-at-3-14-16-PM.png)
 
-### 🌐 Hosted Live at: [https://xero-crm-web.vercel.app](https://xero-crm-web.vercel.app)
 
 </div>
 
@@ -118,7 +117,6 @@ node seed-data.js
 npm run dev
 ```
 
-### 🌐 Visit: [https://xero-crm-web.vercel.app](https://xero-crm-web.vercel.app)
 
 ---
 
